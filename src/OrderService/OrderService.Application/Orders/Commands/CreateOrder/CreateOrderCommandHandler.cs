@@ -1,7 +1,7 @@
 using MediatR;
 using OrderService.Domain.Entities;
 using OrderService.Application.Interfaces;
-using OrderService.Application.Events; // To use OrderCreatedEvent
+using Contracts; // To use the OrderCreatedEvent
 using MassTransit; // To use the message publisher
 
 namespace OrderService.Application.Orders.Commands.CreateOrder;
