@@ -14,6 +14,7 @@ builder.Services.AddMediatR(cfg =>
 // 3. We register our simulated database
 builder.Services.AddSingleton<IOrderRepository, InMemoryOrderRepository>();
 
+
 var app = builder.Build();
 
 // 4. CRITICAL: We connect the HTTP routes (like /api/orders) to the engine
