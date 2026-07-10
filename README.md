@@ -4,15 +4,6 @@ A distributed system based on microservices and an **Event-Driven Architecture**
 
 ---
 
-## System Architecture
-
-The project implements the **Publisher-Consumer** pattern using RabbitMQ as a message broker to ensure **Zero Data Loss** in the event of consumer service downtime.
-
-![Architecture Diagram](docs/architecture.png)
-> *Note: Replace this link with the actual relative path to your architecture diagram.*
-
----
-
 ## Microservices
 
 ### 1. OrderService (REST API — Publisher)
