@@ -5,10 +5,14 @@ using OrderService.Infrastructure.Repositories;
 using Microsoft.EntityFrameworkCore;
 using MassTransit;
 
+
+
 var builder = WebApplication.CreateBuilder(args);
 
 // 1. Configure Controllers
 builder.Services.AddControllers();
+builder.Services.AddEndpointsApiExplorer(); 
+builder.Services.AddSwaggerGen();
 
 // 2. Register MediatR for CQRS
 builder.Services.AddMediatR(cfg => 
@@ -41,5 +45,9 @@ var app = builder.Build();
 
 // 4. Connect HTTP routes to the engine
 app.MapControllers();
-
+if (app.Environment.IsDevelopment())
+{
+    app.UseSwagger();
+    app.UseSwaggerUI();
+}
 app.Run();
