@@ -3,6 +3,7 @@ using OrderService.Application.Interfaces;
 using OrderService.Infrastructure.Persistence.Data; // Required for OrderDbContext
 using OrderService.Infrastructure.Repositories;
 using Microsoft.EntityFrameworkCore;
+using MassTransit;
 
 var builder = WebApplication.CreateBuilder(args);
 
@@ -16,11 +17,25 @@ builder.Services.AddMediatR(cfg =>
 // 3. connect PostgreSQL and  repository
 var connectionString = builder.Configuration.GetConnectionString("DefaultConnection");
 
+
 builder.Services.AddDbContext<OrderDbContext>(options =>
     options.UseNpgsql(connectionString));
 
 //  Scoped (real database)
 builder.Services.AddScoped<IOrderRepository, OrderRepository>();
+
+//  MASSTRANSIT Y RABBITMQ 
+builder.Services.AddMassTransit(x =>
+{
+    x.UsingRabbitMq((context, cfg) =>
+    {
+        cfg.Host("localhost", "/", h => {
+            h.Username("guest");
+            h.Password("guest");
+        });
+    });
+});
+
 
 var app = builder.Build();
 

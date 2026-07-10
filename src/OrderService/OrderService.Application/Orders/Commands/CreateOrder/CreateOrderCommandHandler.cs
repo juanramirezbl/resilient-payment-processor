@@ -1,31 +1,34 @@
 using MediatR;
 using OrderService.Domain.Entities;
 using OrderService.Application.Interfaces;
+using OrderService.Application.Events; // To use OrderCreatedEvent
+using MassTransit; // To use the message publisher
 
 namespace OrderService.Application.Orders.Commands.CreateOrder;
 
-// IRequestHandler tells MediatR what to do
 public class CreateOrderCommandHandler : IRequestHandler<CreateOrderCommand, Guid>
 {
     private readonly IOrderRepository _repository;
+    private readonly IPublishEndpoint _publishEndpoint; // The "megaphone" of MassTransit
 
-    // Dependency Injection: We ask .NET for a class that implements the IOrderRepository 
-    // interface, regardless of whether it's SQL, Mongo, or in-memory.
-    public CreateOrderCommandHandler(IOrderRepository repository)
+    public CreateOrderCommandHandler(IOrderRepository repository, IPublishEndpoint publishEndpoint)
     {
         _repository = repository;
+        _publishEndpoint = publishEndpoint;
     }
 
     public async Task<Guid> Handle(CreateOrderCommand request, CancellationToken cancellationToken)
     {
-        // 1. Instantiate the domain entity (it validates its own rules)
         var order = new Order(request.CustomerId, request.TotalAmount);
 
-        // 2. Save the order using the interface
+        // 1. Save in PostgreSQL
         await _repository.AddAsync(order, cancellationToken);
         await _repository.SaveChangesAsync(cancellationToken);
 
-        // 3. Return the ID of the newly created order
+        // 2. NEW: Publish the event to RabbitMQ
+        var orderCreatedEvent = new OrderCreatedEvent(order.Id, order.TotalAmount);
+        await _publishEndpoint.Publish(orderCreatedEvent, cancellationToken);
+
         return order.Id;
     }
 }

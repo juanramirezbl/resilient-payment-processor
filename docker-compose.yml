@@ -11,5 +11,15 @@ services:
     volumes:
       - pgdata:/var/lib/postgresql/data
 
+  rabbitmq:
+    image: rabbitmq:3-management-alpine # interesting to show how messages travels in live
+    container_name: resilient-rabbitmq
+    ports:
+      - "5672:5672"   # Communication port (where your C# will pass through)
+      - "15672:15672" # Visual port (Web interface for us)
+    environment:
+      RABBITMQ_DEFAULT_USER: guest
+      RABBITMQ_DEFAULT_PASS: guest
+
 volumes:
   pgdata:
