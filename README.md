@@ -1,4 +1,4 @@
-# Resilient Payment System
+# Resilient Payment Processor
 
 A distributed system based on microservices and an **Event-Driven Architecture**
 
